@@ -27,15 +27,11 @@ export default class Shortcut extends Component {
   }
 
   render() {
-    return React.createElement(
-      'div',
-      { ref: this.ref },
-      this.props.children
-    );
+    return <div ref={this.ref}>{this.props.children}</div>;
   }
 }
 
 Shortcut.propTypes = {
   shortcut: PropTypes.string.isRequired,
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
 };
