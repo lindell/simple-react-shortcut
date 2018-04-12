@@ -1,7 +1,7 @@
 # simple-react-shortcut
 
 ```javascript
-import Shortcut from "simple-react-shortcut";
+import Shortcut from 'simple-react-shortcut';
 ```
 
 ```html
