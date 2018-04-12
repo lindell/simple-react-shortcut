@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { Component, Children } from 'react';
+import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
 import keycode from 'keycode';
 
@@ -22,12 +23,14 @@ export default class Shortcut extends Component {
   }
 
   keyPress() {
-    const input = this.ref.current.querySelector('input');
-    input.focus();
+    const child = findDOMNode(this);
+    if (child) {
+      child.focus();
+    }
   }
 
   render() {
-    return <div ref={this.ref}>{this.props.children}</div>;
+    return this.props.children;
   }
 }
 
