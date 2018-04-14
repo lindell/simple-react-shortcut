@@ -1,3 +1,5 @@
+import { getMapKey } from './help';
+
 let upKeys = [];
 const shortcuts = {};
 let setup = false;
@@ -12,9 +14,11 @@ export function start() {
     if (!upKeys.some(keyCode => keyCode === e.keyCode)) {
       upKeys.push(e.keyCode);
     }
-    const callbacks = shortcuts[upKeys.sort().join()];
-    if (callbacks) {
-      callbacks.forEach(callback => callback());
+
+    const objects = shortcuts[getMapKey(upKeys)];
+    if (objects) {
+      e.preventDefault();
+      objects.forEach(object => object.shortcutPressed());
     }
   });
 
@@ -23,14 +27,13 @@ export function start() {
   });
 }
 
-export function bind(keys, callback) {
+export function bind(object) {
   start();
 
-  const key = keys.sort().join();
-  shortcuts[key] = [callback];
+  // TODO
+  shortcuts[object.shortcut] = [object];
 }
 
-export function unbind(keys, callback) {
-  const key = keys.sort().join();
-  shortcuts[key] = shortcuts[key].filter(cb => cb !== callback);
+export function unbind(object) {
+  shortcuts[object.shortcut] = shortcuts[object.shortcut].filter(cb => cb !== object);
 }
