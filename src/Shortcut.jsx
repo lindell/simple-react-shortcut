@@ -2,17 +2,10 @@ import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
 
-import { bind, unbind } from './shared';
-import { parseKeys, getMapKey } from './help';
+import { supportedElements } from './settings';
 
-const supportedElements = {
-  INPUT: {
-    functionName: 'focus',
-  },
-  BUTTON: {
-    functionName: 'click',
-  },
-};
+import { bind, unbind } from './shared';
+import { parseKeys, getMapKey, getElement } from './help';
 
 export default class Shortcut extends Component {
   constructor(props) {
@@ -31,27 +24,43 @@ export default class Shortcut extends Component {
 
   prepareOptions() {
     this.shortcut = getMapKey(parseKeys(this.props.shortcut));
+    this.hint = getMapKey(parseKeys(this.props.hint));
     this.action = this.props.action;
     this.shortcutPressed = this.shortcutPressed.bind(this);
   }
 
   shortcutPressed() {
-    const child = findDOMNode(this);
-    if (child === undefined) {
+    const elem = getElement(this);
+    if (!elem) {
+      return;
+    }
+    this.handleElement(elem);
+  }
+
+  hintPressed() {
+    const elem = getElement(this);
+    if (!elem) {
       return;
     }
 
-    // If the element is the first element
-    const elementSettings = supportedElements[child.nodeName];
-    if (elementSettings) {
-      this.handleElement(child);
-    }
+    const parent = elem.parentElement;
 
-    const querySelector = Object.keys(supportedElements).join(',');
-    const selectedElement = child.querySelector(querySelector);
-    if (selectedElement) {
-      this.handleElement(selectedElement);
-    }
+    const hintElem = document.createElement('div');
+
+    hintElem.innerHTML = this.props.shortcut;
+    hintElem.style.position = 'absolute';
+    hintElem.style.left = `${elem.offsetLeft}px`;
+    hintElem.style.top = `${elem.offsetTop}px`;
+    hintElem.style.width = `${elem.getBoundingClientRect().width}px`;
+    hintElem.style.height = `${elem.getBoundingClientRect().height}px`;
+    hintElem.style.background = 'rgba(0,0,0,0.2)';
+
+    parent.insertBefore(hintElem, elem);
+    this.hintElement = hintElem;
+  }
+
+  hintReleased() {
+    this.hintElement.remove();
   }
 
   handleElement(element) {
@@ -76,6 +85,7 @@ export default class Shortcut extends Component {
 
 Shortcut.propTypes = {
   shortcut: PropTypes.string.isRequired,
+  hint: PropTypes.string.isRequired,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
   action: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 };
