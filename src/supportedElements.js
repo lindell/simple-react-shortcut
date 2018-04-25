@@ -1,6 +1,4 @@
-/* eslint-disable import/prefer-default-export */
-
-export const supportedElements = {
+export default {
   INPUT: {
     functionName: 'focus',
   },

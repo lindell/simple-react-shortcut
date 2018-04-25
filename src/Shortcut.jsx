@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
-import { findDOMNode } from 'react-dom';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { supportedElements } from './settings';
+import supportedElements from './supportedElements';
 
 import { bind, unbind } from './shared';
 import { parseKeys, getMapKey, getElement } from './help';
@@ -24,7 +23,6 @@ export default class Shortcut extends Component {
 
   prepareOptions() {
     this.shortcut = getMapKey(parseKeys(this.props.shortcut));
-    this.hint = getMapKey(parseKeys(this.props.hint));
     this.action = this.props.action;
     this.shortcutPressed = this.shortcutPressed.bind(this);
   }
@@ -85,7 +83,6 @@ export default class Shortcut extends Component {
 
 Shortcut.propTypes = {
   shortcut: PropTypes.string.isRequired,
-  hint: PropTypes.string.isRequired,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
   action: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 };
