@@ -1,4 +1,4 @@
-import { getMapKey, parseKeys } from './help';
+import { getMapKey, parseKeys, normalizeShortcutInput } from './help';
 import config from './config';
 
 let downKeys = [];
@@ -8,7 +8,7 @@ let setup = false;
 let allObjects = [];
 
 function showHintIfPressed() {
-  const hintKeys = getMapKey(parseKeys(config.hintKeys));
+  const hintKeys = getMapKey(parseKeys(normalizeShortcutInput(config.hintKeys)));
 
   if (!hintsShowing && hintKeys === getMapKey(downKeys)) {
     allObjects.forEach(object => object.hintPressed());

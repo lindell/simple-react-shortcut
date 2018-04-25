@@ -1,14 +1,19 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import ReactDOM from 'react-dom';
 
 import supportedElements from './supportedElements';
 
 import { bind, unbind } from './shared';
-import { parseKeys, getMapKey, getElement } from './help';
+import { parseKeys, getMapKey, getElement, normalizeShortcutInput } from './help';
 
 export default class Shortcut extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      shortcut: normalizeShortcutInput(props.shortcut),
+    };
 
     this.prepareOptions(this);
   }
@@ -22,7 +27,7 @@ export default class Shortcut extends Component {
   }
 
   prepareOptions() {
-    this.shortcut = getMapKey(parseKeys(this.props.shortcut));
+    this.shortcut = getMapKey(parseKeys(this.state.shortcut));
     this.action = this.props.action;
     this.shortcutPressed = this.shortcutPressed.bind(this);
   }
@@ -43,18 +48,37 @@ export default class Shortcut extends Component {
 
     const parent = elem.parentElement;
 
-    const hintElem = document.createElement('div');
+    const hintElementWrapper = document.createElement('div');
+    hintElementWrapper.style.position = 'absolute';
+    hintElementWrapper.style.left = `${elem.offsetLeft}px`;
+    hintElementWrapper.style.top = `${elem.offsetTop}px`;
+    hintElementWrapper.style.width = `${elem.getBoundingClientRect().width}px`;
+    hintElementWrapper.style.height = `${elem.getBoundingClientRect().height}px`;
 
-    hintElem.innerHTML = this.props.shortcut;
-    hintElem.style.position = 'absolute';
-    hintElem.style.left = `${elem.offsetLeft}px`;
-    hintElem.style.top = `${elem.offsetTop}px`;
-    hintElem.style.width = `${elem.getBoundingClientRect().width}px`;
-    hintElem.style.height = `${elem.getBoundingClientRect().height}px`;
-    hintElem.style.background = 'rgba(0,0,0,0.2)';
+    const Label = () => (
+      <div
+        style={{
+          position: 'absolute',
+          right: 0,
+          top: 0,
+          transform: 'translate3D(50%, -50%, 0)',
+          fontSize: '9px',
+          background: '#3997d4',
+          color: 'white',
+          textTransform: 'uppercase',
+          borderRadius: '2px',
+          padding: '2px 3px',
+          textShadow: '0 0 1px rgba(0, 0, 0, 0.3)',
+        }}
+      >
+        {this.state.shortcut.join(' + ')}
+      </div>
+    );
 
-    parent.insertBefore(hintElem, elem);
-    this.hintElement = hintElem;
+    parent.insertBefore(hintElementWrapper, elem);
+
+    ReactDOM.render(<Label />, hintElementWrapper);
+    this.hintElement = hintElementWrapper;
   }
 
   hintReleased() {
